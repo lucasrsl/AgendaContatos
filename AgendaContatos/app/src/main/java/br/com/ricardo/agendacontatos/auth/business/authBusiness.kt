@@ -1,21 +1,31 @@
 package br.com.ricardo.agendacontatos.auth.business
 
 import br.com.ricardo.agendacontatos.auth.database.authDatabase
-import br.com.ricardo.agendacontatos.auth.modules.Data
+import br.com.ricardo.agendacontatos.auth.modules.User
 import br.com.ricardo.agendacontatos.auth.network.authNetwork
 
 object authBusiness {
-    fun buscaPerfil(email: String, senha: String, onSuccess: () -> Unit, onError: () -> Unit){
-        authNetwork.login(email,senha,{ data: Data ->
-            authDatabase.salvaPerfil(data.data){
-                onSuccess()
+    fun fazLogin(user: User, onSuccess: () -> Unit, onError: (msg: String) -> Unit){
+        authNetwork.login(user,{ response: User ->
+
+            response?.let {
+                authDatabase.limpaBanco()
+                authDatabase.salvaPerfil(it){
+                    onSuccess()
+                }
+
             }
         },{
-            onError()
+            onError("Conta não encontrada!")
         })
     }
 
-    fun criaConta(email: String, senha: String, onSuccess: () -> Unit, onError: () -> Unit){
+    fun criaConta(user: User, onSuccess: (msg: String) -> Unit, onError: (msg: String) -> Unit){
+        authNetwork.criarUsuario(user,{
+            onSuccess(it)
+        },{
+            onError("E-mail já está cadastrado!")
+        })
 
     }
 

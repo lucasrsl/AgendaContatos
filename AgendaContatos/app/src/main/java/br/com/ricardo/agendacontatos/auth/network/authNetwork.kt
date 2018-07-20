@@ -2,7 +2,6 @@ package br.com.ricardo.agendacontatos.auth.network
 
 import br.com.ricardo.agendacontatos.auth.modules.Data
 import br.com.ricardo.agendacontatos.auth.modules.User
-import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import retrofit2.Retrofit
@@ -24,31 +23,38 @@ object authNetwork {
                 .build()
     }
 
-    fun login(email: String, senha: String, onSuccess: (data: Data) -> Unit, onError: () -> Unit){
+    fun login(user: User, onSuccess: (user: User) -> Unit, onError: () -> Unit){
 
-        var user = User()
-        user.email = email
-        user.senha = senha
 
         authAPI.login(user)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers
-                .mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ data ->
 
-                    data?.let{
+                    val userResponse = data.body()?.data
+
+                    userResponse?.let {
+                        it.uid = data.headers()["Uid"]
+                        it.accessToken = data.headers()["Access-Token"]
+                        it.client = data.headers()["Client"]
                         onSuccess(it)
                     }
+
                 },{
                     onError()
                 })
     }
 
-    fun criarUsuario(email: String, senha: String, onSuccess: (data: Data) -> Unit, onError: () -> Unit){
-        var user = User()
-        user.email = email
-        user.senha = senha
-
+    fun criarUsuario(user: User, onSuccess: (msg: String) -> Unit,  onError: () -> Unit){
+        authAPI.criaUsuario(user)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    onSuccess("Usuário criado com sucesso!")
+                    it
+                },{
+                   onError()
+                })
 
     }
 }

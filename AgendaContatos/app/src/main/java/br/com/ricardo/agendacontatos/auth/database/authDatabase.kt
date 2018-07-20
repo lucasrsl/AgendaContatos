@@ -15,4 +15,13 @@ object authDatabase{
 
          }
      }
+
+    fun limpaBanco(){
+        Realm.getDefaultInstance().use { realm ->
+            realm.beginTransaction()
+            realm.deleteAll()
+            realm.commitTransaction()
+
+        }
+    }
 }

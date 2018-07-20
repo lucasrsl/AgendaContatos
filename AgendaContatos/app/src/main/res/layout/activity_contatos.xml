@@ -7,9 +7,14 @@
     tools:context=".view.activity.ContatosActivity">
 
     <view class="android.support.v7.app.AlertController$RecycleListView"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical"/>
+        android:id="@+id/recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton"
